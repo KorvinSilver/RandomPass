@@ -55,7 +55,8 @@ if __name__ == "__main__":
               "number [custom-set]",
         description="Generate a random password or passphrase")
     parser.add_argument("number", nargs="?",
-                        help="number of characters, a positive integer")
+                        help="number of characters or words, a positive "
+                             "integer")
     parser.add_argument("custom_set", metavar="custom-set", nargs="*",
                         help="a custom set of characters")
     parser.add_argument("-a", "--alphanumeric", action="store_true",
