@@ -20,14 +20,16 @@ limitations under the License.
 """
 
 import argparse
-import nltk
-from nltk.corpus import stopwords
-from nltk.corpus import words
-import os
-import secrets
-import shutil
 import string
 import sys
+from rndplib.generator import (
+    downloader,
+    words_stopwords,
+    trimmed_words,
+    passphrase,
+    expanded_passphrase,
+    expanded_chars,
+    password)
 
 __author__ = "Korvin F. Ezüst"
 __copyright__ = "Copyright (c) 2018, Korvin F. Ezüst"
@@ -35,18 +37,6 @@ __license__ = "Apache 2.0"
 __version__ = "1.0"
 __email__ = "dev@korvin.eu"
 __status__ = "Production"
-
-
-def downloader():
-    """Replace word and stop-word list"""
-    # Get the download directory chosen by nltk
-    download_dir = nltk.downloader.Downloader().default_download_dir()
-    # Remove directory corpora from it, ignore errors
-    download_dir = os.path.join(download_dir, "corpora")
-    shutil.rmtree(download_dir, ignore_errors=True)
-    # Download word and stop-word list
-    nltk.download("words")
-    nltk.download("stopwords")
 
 
 if __name__ == "__main__":
@@ -120,64 +110,21 @@ if __name__ == "__main__":
     if args.words:
         try:
             # Get word list
-            word_list = words.words()
-            stop_word_list = stopwords.words("english")
+            word_list, stop_word_list = words_stopwords()
         except LookupError:
             # Download if not available
             downloader()
-            word_list = words.words()
-            stop_word_list = stopwords.words("english")
+            word_list, stop_word_list = words_stopwords()
 
-        # Remove stop words
-        word_list = [i for i in word_list if i not in stop_word_list]
-        # Remove words shorter than 3 characters
-        word_list = [i for i in word_list if len(i) > 2]
-        # Remove words with apostrophe
-        word_list = [i for i in word_list if "'" not in i]
+        word_list = trimmed_words(word_list, stop_word_list)
 
-        # Store the random string
-        rnd = ""
-        # Get num random words
-        for _ in range(num):
-            rnd += secrets.choice(word_list) + " "
+        # Print passphrase with or without extra chars
+        rnd = passphrase(word_list, num)
 
-        # On argument extra-characters
         if args.extra_characters:
-            # store extra characters
-            ext = ""
-            # store indices in rnd
-            indices = []
-            # get a random number from 0 to num, exclusive
-            u = secrets.randbelow(num)
-            # make it at least 2
-            if u < 2:
-                u = 2
-
-            # loop in range of u
-            for _ in range(u):
-                # get random character from custom-set or string.punctuation
-                try:
-                    ext += secrets.choice("".join(args.custom_set))
-                except IndexError:
-                    ext += secrets.choice(string.punctuation)
-                # pick a random index in rnd, don't pick the same twice
-                r = 0
-                while r in indices:
-                    r = secrets.randbelow(len(rnd))
-                indices.append(r)
-
-            # expand rnd with extra characters at given indexes
-            tmp = ""
-            j = 0
-            for i in range(len(rnd)):
-                tmp += rnd[i]
-                if i in indices:
-                    tmp += ext[j]
-                    j += 1
-            rnd = tmp
-
-        # Print passphrase
-        print(rnd)
+            print(expanded_passphrase(rnd, num, args.custom_set))
+        else:
+            print(rnd)
 
     # Password from characters
     else:
@@ -199,18 +146,7 @@ if __name__ == "__main__":
         # Add custom set of characters if any or fall back to ASCII
         # punctuation marks
         if args.extra_characters:
-            if len(args.custom_set) > 0:
-                for i in args.custom_set:
-                    chars += i
-            else:
-                chars += string.punctuation
+            chars = expanded_chars(chars, args.custom_set)
 
-        # Remove duplicate characters
-        chars = "".join(set(chars))
-        # Generate and print a random string
-        rnd = ""
-        for _ in range(num):
-            rnd += secrets.choice(chars)
-
-        # Print password
-        print(rnd)
+        # Generate and print the password
+        print(password(chars, num))
