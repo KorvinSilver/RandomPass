@@ -21,6 +21,7 @@ limitations under the License.
 
 import tkinter as tk
 from tkinter import font
+from tkinter import messagebox
 from rndplib.generator import (
     download_words,
     word_list,
@@ -29,6 +30,7 @@ from rndplib.generator import (
     password
 )
 import string
+from functools import partial
 
 __author__ = "Korvin F. Ezüst"
 __copyright__ = "Copyright (c) 2018, Korvin F. Ezüst"
@@ -60,6 +62,25 @@ class MainWindow(tk.Tk):
 
         # Add font
         self.fn = font.Font(family="monospace", size=9)
+
+        # Menu bar
+        menu = tk.Menu(self)
+        # File menu
+        file = tk.Menu(menu, tearoff=0)
+        file.add_command(
+            label="Update word list", command=self.update_words)
+        file.add_separator()
+        file.add_command(label="Exit", command=self.destroy)
+        menu.add_cascade(label="File", menu=file)
+        # About menu
+        about = tk.Menu(menu, tearoff=0)
+        # TODO: use own window instead of messagebox
+        # TODO: proper about text and license
+        win = partial(self.pop_up, "About", "Random Password Generator")
+        about.add_command(label="About", command=win)
+        about.add_command(label="License", command=win)
+        menu.add_cascade(label="About", menu=about)
+        self.config(menu=menu)
 
         # Password or passphrase type
         self.pass_type = tk.StringVar()
@@ -293,6 +314,18 @@ class MainWindow(tk.Tk):
                     p = expanded_passphrase(p, n, ext)
                 # Print passphrase
                 self.pass_out.insert("0.0", p)
+
+    def update_words(self):
+        """Update word list"""
+        self.pass_out.delete("0.0", tk.END)
+        self.pass_out.insert("0.0", "UPDATING WORD LIST...")
+        self.update_idletasks()
+        download_words()
+        self.pass_out.delete("0.0", tk.END)
+
+    @staticmethod
+    def pop_up(tt, tx):
+        messagebox.showinfo(tt, tx)
 
     def run(self):
         self.mainloop()
