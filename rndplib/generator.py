@@ -35,7 +35,7 @@ __email__ = "dev@korvin.eu"
 __status__ = "Production"
 
 
-def downloader():
+def download_words():
     """Replace word and stop-word list"""
     # Get the download directory chosen by nltk
     download_dir = nltk.downloader.Downloader().default_download_dir()
@@ -47,26 +47,16 @@ def downloader():
     nltk.download("stopwords")
 
 
-def words_stopwords():
+def word_list():
     """
-    Return word and stop-word list
-    :return: list of words and list of stop-words
-    :rtype: tuple
-    """
-    return words.words(), stopwords.words("english")
+    Return English words minus short words, stop-words and words with
+    apostrophe
 
-
-def trimmed_words(w, sw):
-    """
-    Remove stop words from word list
-
-    :param w: word list
-    :type w: list
-    :param sw: stop word list
-    :type sw: list
-    :return: word list without stop words
+    :return: English words
     :rtype: list
     """
+    w = words.words()
+    sw = stopwords.words("english")
     # Remove stop words
     w = [i for i in w if i not in sw]
     # Remove words shorter than 3 characters
