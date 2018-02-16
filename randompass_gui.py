@@ -132,10 +132,13 @@ class MainWindow(tk.Tk):
         self.custom.grid(row=3, column=1, sticky="W")
 
         # Custom characters input field
+        # Entry field
         self.input = tk.Entry(self, font=self.fn)
         self.input.grid(row=4, column=1, sticky="WE")
+        # Scrollbar
         self.cscroll = tk.Scrollbar(self, orient="horizontal")
         self.cscroll.grid(row=5, column=1, sticky="WE")
+        # Connect entry field and scrollbar
         self.input.config(xscrollcommand=self.cscroll.set)
         self.cscroll.config(command=self.input.xview)
 
@@ -266,8 +269,8 @@ class MainWindow(tk.Tk):
             try:
                 w = word_list()
             except LookupError:
-                # TODO: make this message appear before download
                 self.pass_out.insert("0.0", "DOWNLOADING WORD LIST...")
+                self.update_idletasks()
                 download_words()
                 self.pass_out.delete("0.0", tk.END)
                 w = word_list()
