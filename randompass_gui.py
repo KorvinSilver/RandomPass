@@ -36,9 +36,9 @@ import webbrowser
 __author__ = "Korvin F. Ezüst"
 __copyright__ = "Copyright (c) 2018, Korvin F. Ezüst"
 __license__ = "Apache 2.0"
-__version__ = "0.9"
+__version__ = "1.0"
 __email__ = "dev@korvin.eu"
-__status__ = "Demo"
+__status__ = "Production"
 
 
 class BasicWindow(tk.Tk):
@@ -79,8 +79,8 @@ class AboutWindow(BasicWindow):
         # Label with program description
         label2 = tk.Label(
             self,
-            text="A program to create various types of passwords and "
-                 "passphrases")
+            text=f"A program to generate various types of passwords and "
+                 f"passphrases\n{__copyright__}\nLicensed under {__license__}")
         label2.grid(row=1, columnspan=2, padx=10, pady=10)
 
         def callback_python(event):
@@ -108,8 +108,36 @@ class AboutWindow(BasicWindow):
         close_button.grid(row=4, columnspan=2, pady=20)
 
 
-class DocWindow(BasicWindow):
-    pass
+class DescWindow(BasicWindow):
+    def __init__(self):
+        super(DescWindow, self).__init__()
+        self.title("Description")
+
+        # Description
+        desc = "\nThe program can generate various passwords with random " \
+               "characters or\npassphrases with random English words.\n\n" \
+               "You have the option to generate passwords or passphrases " \
+               "containing the\nfollowing sets:\n\n" \
+               "- ASCII characters from 33 to 126\n" \
+               "- alphanumeric only -- ASCII 48-57, 65-90, and 97-122\n" \
+               "- binary only -- digits from 0 to 1\n" \
+               "- octal only -- digits from 0 to 7\n" \
+               "- decimal only -- digits from 0 to 9\n" \
+               "- hexadecimal only -- digits from 0 to F\n" \
+               "- words -- randomly chosen English words from a dictionary " \
+               "of over 236000 words\n\n" \
+               "You can add your own characters to each and have the " \
+               "program randomly pick\nfrom those as well. In case of a " \
+               "passphrase, a random number of them will be\npicked and " \
+               "placed at random positions into the passphrase."
+        text = tk.Text(self, width=80)
+        text.grid(row=0, columnspan=2)
+        text.insert("0.0", desc)
+        text.config(state="disabled")
+
+        # Close button
+        close_button = tk.Button(self, text="Close", command=self.destroy)
+        close_button.grid(row=1, columnspan=2, pady=10)
 
 
 class LicenseWindow(BasicWindow):
@@ -171,12 +199,12 @@ class MainWindow(BasicWindow):
             win = LicenseWindow()
             win.run()
 
-        def doc_window():
-            """Open documentation window"""
-            # TODO: finish this when README is ready
-            pass
+        def desc_window():
+            """Open description window"""
+            win = DescWindow()
+            win.run()
 
-        help_.add_command(label="Documentation", command=doc_window)
+        help_.add_command(label="Description", command=desc_window)
         help_.add_command(label="License", command=license_window)
         help_.add_command(label="About", command=about_window)
         menu.add_cascade(label="Help", menu=help_)
