@@ -37,17 +37,12 @@ __version__ = "1.0"
 __email__ = "dev@korvin.eu"
 __status__ = "Production"
 
-
-def positive_integer(n):
-    return int(n) > 0
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         usage="%(prog)s [-h|-a|-b|-o|-d|-x|-u] [-e] | [-w] [-e]] "
               "number [custom-set]",
         description="Generate a random password or passphrase")
-    parser.add_argument("number", nargs="?", type=positive_integer,
+    parser.add_argument("number", nargs="?",
                         help="number of characters or words, a positive "
                              "integer")
     parser.add_argument("custom_set", metavar="custom-set", nargs="*",
@@ -72,11 +67,26 @@ if __name__ == "__main__":
                         help="update word list and exit")
     args = parser.parse_args()
 
-    if not args.number:
+    try:
+        # Try to convert number to an integer
+        num = int(args.number)
+    except ValueError:
         parser.print_help()
         sys.exit()
-    else:
-        num = args.number
+    except TypeError:
+        # No positional argument is given
+        if args.update_words:
+            # update word list
+            download_words()
+            sys.exit()
+        else:
+            parser.print_help()
+            sys.exit()
+
+    # num can only be positive
+    if num <= 0:
+        parser.print_help()
+        sys.exit()
 
     # sum int value of arguments: binary, octal, decimal, hexadecimal,
     # alphanumeric, words and update-words
