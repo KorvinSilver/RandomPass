@@ -3,6 +3,7 @@
 
 **Requirements:**
 - Python 3.6 or newer
+- nltk 3.0 or newer
 
 This project is licensed under the Apache License 2.0. [Learn more.](https://choosealicense.com/licenses/apache-2.0/)
 
